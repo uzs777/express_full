@@ -4,6 +4,7 @@ import { connectDB } from "./config/db.js";
 import router from "./routes/index.routes.js";
 import { errorHandle } from "./middlewares/error-hencler.js";
 import { ApiError } from "./utils/custum-error.js";
+import { createSUPERADMIN } from "./helper/create-superAdmin.js";
 config();
 
 const app = express();
@@ -12,6 +13,7 @@ const PORT = +process.env.PORT;
 app.use(express.json())
 
 await connectDB()
+await createSUPERADMIN()
 app.use("/api", router)
 
 app.all(/(.*)/, (req, res, next) => {

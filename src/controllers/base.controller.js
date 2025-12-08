@@ -48,4 +48,11 @@ export class BaseController {
         }
         return data
     }
+
+    async _isExist(property, message) {
+        const exists = await this.model.findOne(property)
+        if (exists) {
+            throw new ApiError(`${message} already exists`, 409)
+        }
+    }
 }
