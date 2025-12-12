@@ -19,10 +19,7 @@ class categoryController extends BaseController {
         await this._getById(id)
         const { name } = req.body
         if (name) {
-            const existsName = await Category.findOne({ name });
-            if (existsName && existsName.id != id) {
-                throw new ApiError('name exists', 409)
-            }
+            await this._ExistId(id,{name},"name")
         }
         const newData = await Category.findByIdAndUpdate(id, req.body, { new: true })
         return successRes(res, newData)

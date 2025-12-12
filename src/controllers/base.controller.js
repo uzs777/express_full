@@ -55,4 +55,11 @@ export class BaseController {
             throw new ApiError(`${message} already exists`, 409)
         }
     }
+
+    async _ExistId(id, property, message) {
+        const existsData = await this.model.findOne(property);
+        if (existsData && existsData.id != id) {
+            throw new ApiError(`${message} exists`, 409)
+        }
+    }
 }
