@@ -32,15 +32,40 @@ class adminController extends BaseController {
             await this._ExistId(id, { email }, "email")
         }
         let hashedPassword = admin.hashedPassword;
-        if (password) {
-            hashedPassword = await hashedData.decode(password)
-            delete req.body?.password
+        if (password && req.user.role === Roles.SUPERADMIN) {
+            hashedPassword = await hashedData.decode(password);
+            delete req.body?.password;
         }
-        const newAdmin = await Admin.create({
-            hashedPassword,
-            ...req.body
-        })
+        const newAdmin = await Admin.findByIdAndUpdate(id, { ...req.body, hashedPassword }, { new: true })
         return successRes(res, newAdmin)
+    })
+
+    updatePassword = catchAsync(async (req, res) => {
+        const id = req.params?.id;
+        const admin = await this._getById(id);
+        const { oldPassword, newPassword } = req.body;
+        if (!oldPassword && req.user.role === Roles.ADMIN) {
+            throw new ApiError('Old password is required', 400);
+        }
+        if (oldPassword) {
+            const isMatch = await hashedData.encode(oldPassword, admin.hashedPassword);
+            if (!isMatch) {
+                throw new ApiError('Old password does not match', 400)
+            }
+        }
+        const hashedPassword = await hashedData.decode(newPassword);
+        const updateAdmin = await Admin.findByIdAndUpdate(id, { hashedPassword }, { new: true });
+        return successRes(res, updateAdmin)
+    })
+
+    delate = catchAsync(async (req, res) => {
+        const id = req.params?.id;
+        const admin = await this._getById(id);
+        if (admin && admin.role == Roles.SUPERADMIN) {
+            throw new ApiError('Super admin is not deletable', 400);
+        }
+        await Admin.findByIdAndDelete(id);
+        return successRes(res, {})
     })
 }
 

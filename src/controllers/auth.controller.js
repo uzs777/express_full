@@ -23,6 +23,26 @@ class AuthController {
         });
     });
 
+    confirmOTP = catchAsync(async (req, res) => {
+        const { email, otp } = req.body;
+        const user = await User.findOne({ email })
+        if (!user) {
+            throw new ApiError('Email is wrong', 404);
+        }
+        const cacheDate = getCache(email);
+        if (!cacheDate || cacheDate != otp) {
+            throw new ApiError('OTP expired or incorrect', 400);
+        }
+        const poylod = { id: user._id, role: user.role };
+        const accessToken = token.getAccess(poylod);
+        const refreshToken = token.getRefreshToken(poylod, res);
+        return successRes(res, {
+            accessToken,
+            refreshToken,
+            user
+        });
+    })
+
     getAccessToken = catchAsync(async (req, res) => {
         const refreshToken = req.cookies?.refreshToken;
         if (!refreshToken) {

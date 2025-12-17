@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { Genders } from "../enums/users-enums";
+import { Genders } from "../enums/users-enums.js";
 
 class UserValidator {
     static phoneRegex = /^\+[1-9]\d{1,14}$/;
@@ -39,6 +39,22 @@ class UserValidator {
             password: Joi.string().required(),
         });
         return user.validate(data);
+    }
+
+    confirmOTP(data) {
+        const user = Joi.object({
+            email: Joi.string().optional(),
+            otp: Joi.number().optional()
+        });
+        return user.validate(data)
+    }
+
+    updatePassword(data) {
+        const user = Joi.object({
+            oldPassword: Joi.string().optional(),
+            newPassword: Joi.string().regex(UserValidator.passwordRegex).required()
+        });
+        return user.validate(data)
     }
 }
 

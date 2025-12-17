@@ -7,12 +7,14 @@ import adminValid from "../validation/user.validation.js"
 const route = Router();
 
 route
-    .post("/", admin.create)
+    .post("/", validator(adminValid.create), admin.create)
     .post("/signin", validator(adminValid.signin), auth.signIn)
+    .post("/otp", validator(adminValid.confirmOTP), auth.confirmOTP)
     .post("/token", auth.getAccessToken)
     .get("/", admin.findAll)
     .get("/:id", admin.findById)
-    .patch("/:id", admin.update)
+    .patch("/password/:id", validator(adminValid.updatePassword), admin.updatePassword)
+    .patch("/:id", validator(adminValid.update), admin.update)
     .delete("/:id", admin.delate)
 
 

@@ -16,5 +16,11 @@ export const envConfig = {
     REFRESHTOKEN: {
         KEY: String(process.env.REFRESH_TOKEN_KEY),
         TIME: String(process.env.REFRESH_TOKEN_TIME)
+    },
+    MAIL: {
+        HOST: String(process.env.MAIL_HOST),
+        PORT: String(process.env.MAIL_PORT),
+        USER: String(process.env.MAIL_USER),
+        PASS: String(process.env.MAIL_PASS)
     }
 };
